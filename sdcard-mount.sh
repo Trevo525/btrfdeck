@@ -72,6 +72,11 @@ do_mount()
       exit 1
     fi
 
+    # Custom btrfs addition from https://github.com/Trevo525/Steam-Deck-sdcard-mount
+    if [[ ${ID_FS_TYPE} == "btrfs" ]]; then
+       OPTS+="compress=zstd:6"
+    fi
+
     if ! /bin/mount -o ${OPTS} ${DEVICE} ${MOUNT_POINT}; then
         echo "Error mounting ${DEVICE} (status = $?)"
         /bin/rmdir ${MOUNT_POINT}
