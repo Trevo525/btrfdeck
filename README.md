@@ -19,8 +19,7 @@ I haven't edited it yet but I am pretty sure I know what I am going to have to d
     * `sudo passwd -d deck`
 
 
-Thanks to [u/ClinicallyInPain](https://www.reddit.com/user/ClinicallyInPain/) on reddit for compiling some of the resources! 
-
+Thanks to [u/ClinicallyInPain](https://www.reddit.com/user/ClinicallyInPain/) on reddit for compiling some of the resources and to [u/Hanntac](https://www.reddit.com/user/Hanntac/) and [u/leo_vir](https://www.reddit.com/user/leo_vir/) for their contributions!
 
 Sources:
 * https://www.reddit.com/r/SteamDeck/comments/taixhw/new_user_questions_current_user_recommendations/
