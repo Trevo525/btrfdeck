@@ -11,7 +11,6 @@ Currently, I have two files from the Steam Deck that potentially could fix the m
     * `passwd deck`
 2. Backup the old scripts.
     * `mkdir ./backup/`
-
     * `cp /usr/lib/hwsupport/sdcard-mount.sh ./backup/sdcard-mount.sh`
 3. Disable readonly so that you can make changes to the protected files. **NOTE: this makes your entire "SteamOS" partition readonly. Basically, removing all barriers keeping you from breaking your system. You've been warned**.
     * `sudo steamos-readonly disable`
