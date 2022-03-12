@@ -66,3 +66,4 @@ Sources:
 * https://linuxhint.com/btrfs-filesystem-mount-options/
 * https://www.reddit.com/r/SteamDeck/comments/t76wh6/compressing_storage_with_btrfs/
 * https://www.reddit.com/r/SteamDeck/comments/t79fqj/comment/hziqcf5/
+* https://serverfault.com/a/767079
