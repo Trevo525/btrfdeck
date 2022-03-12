@@ -4,6 +4,19 @@
 
 Currently, I have two files from the Steam Deck that potentially could setup the microSD card for btrfs. Both of these files were located in the following directory: `/usr/lib/hwsupport/`. I copied them to `./unmodified` and the `./modified` folder contains edited versions.
 
+# But why?
+Great question. There are two reasons why you would want to do this.
+
+1. Saving storage space:  btrfs allows you to apply compression directly to the file system. This can save as much as 40% of space on games. [But don't take my word for it](https://www.reddit.com/r/SteamDeck/comments/t79fqj/formatted_my_sd_card_to_btrfs_managed_to_squeeze/). Another storage saving thing that btrfs allows is de-duplication. I haven't looked into this much so I haven't implement it yet but [I read](https://www.reddit.com/r/SteamDeck/comments/t79fqj/comment/hzh7fyh/) that there is a lot of redundant data in Proton prefixes.
+2. Faster loading times: In my experience with the deck (limited), loading from the microSD card has not been bad. However, microSD is going to be the bottleneck of loading many bigger games because it has only so much bandwidth. If compression saves you ~40% of storage then that means you have 40% less data to load from the microSD, since it's decompressed AFTER being loaded from the card. There is another [reddit thread with more tests](https://www.reddit.com/r/SteamDeck/comments/t8ztuv/btrfs_vs_ext4_tested/), it has a small sample size (tested on one game) but it still looks positive for using compression at the file system level.
+
+# Why not?
+The are two arguments that might suggest that this isn't a good idea.
+1. Adding compression/decompression will decrease your battery's runtime since it's more work for your CPU.
+    * Though that is definetely true, I would argue that the amount that it might decrease would be so small you that it wouldn't even be noticable. I don't know of any tests that have shown how much it affects the power usage, but will update here when I find one. :-D
+2. Changing files in the read-only partition is risky.
+    * This is also true. Don't do it if you don't know what you are doing. It can however be done without editing anything in the readonly partition. You just have to go in and mount it via desktop mode at every boot and insertion.
+
 # Guide (**Work in Progress**):
 ## 1. Download this project to your home directory of the deck.
     cd ~
