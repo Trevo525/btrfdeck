@@ -11,7 +11,8 @@ then
    echo $$ > $MOUNT_LOCK
    parted --script /dev/mmcblk0 mklabel gpt mkpart primary 0% 100%
    sync
-   mkfs.ext4 -m 0 -O casefold -F /dev/mmcblk0p1
+   # mkfs.ext4 -m 0 -O casefold -F /dev/mmcblk0p1
+   mkfs.btrfs /dev/mmcblk0p1
    sync
    rm $MOUNT_LOCK
    systemctl start sdcard-mount@mmcblk0p1.service
