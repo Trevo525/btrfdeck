@@ -1,6 +1,6 @@
 # btrfdeck - (butter-f-deck)
 
-**This is not in a working state. Do not attempt this on your deck!**
+**I was only just now able to get this to work on my Deck. Don't do this unless you know what you are doing! I will change the text in this notice when I am confident in the guide for non-techy people :-)**
 
 Currently, I have two files from the Steam Deck that potentially could setup the microSD card for btrfs. Both of these files were located in the following directory: `/usr/lib/hwsupport/`. I copied them to `./unmodified` and the `./modified` folder contains edited versions.
 
@@ -19,7 +19,7 @@ Currently, I have two files from the Steam Deck that potentially could setup the
     sudo steamos-readonly disable
 ## 5. Replace with modified configs.
     sudo rm /usr/lib/hwsupport/sdcard-mount.sh
-    sudo cp ./modified/format-sdcard.sh /usr/lib/hwsupport/sdcard-mount.sh
+    sudo cp ./modified/sdcard-mount.sh /usr/lib/hwsupport/sdcard-mount.sh
     sudo chmod 755 /usr/lib/hwsupport/sdcard-mount.sh
 ## 6. Re-enable readonly so that you can make changes to the protected files.
     sudo steamos-readonly enable
@@ -28,6 +28,8 @@ Currently, I have two files from the Steam Deck that potentially could setup the
     sudo mkfs.btrfs -f /dev/mmcblk0p1
 ## 8. Remove the password from the deck user.
     sudo passwd -d deck
+
+From here, I was able to get it to work. I first tried on a 128 GB microSD card and was thinking that it didn't work but it just took me a little bit of time for it to fully mount I guess. I am going to try to get some feedback from people some other Steam Deck owners before I call this guide "working".
 
 # Undo the changes: 
 ## 1. Setup `deck` user with a password.
@@ -42,9 +44,10 @@ Currently, I have two files from the Steam Deck that potentially could setup the
 ## 5. Remove the password from the deck user.
     sudo passwd -d deck
 
+
 ## format-sdcard.sh
 
-I found another file in the same directory. So I added it here. `format-sdcard.sh`. Potentially this could be edited to format to btrfs rather than ext4 through the Steam Deck UI so that you don't have to don't have to go to the desktop to format with btrfs.
+I found another file in the same directory. So I added it here. `format-sdcard.sh`. I believe that this file is what is triggered from the "Format SD" button in the Steam Deck UI. Potentially this could be edited to format to btrfs rather than ext4 through the Steam Deck UI so that you don't have to don't have to go to the desktop to format with btrfs. Once I get some tests on the above, I will try to get this setup as well!
 
 **Saved for if I get this to work**:
 
@@ -58,7 +61,7 @@ I found another file in the same directory. So I added it here. `format-sdcard.s
 
 
 
-Thanks to [u/ClinicallyInPain](https://www.reddit.com/user/ClinicallyInPain/) on reddit for compiling some of the resources and to [u/Hanntac](https://www.reddit.com/user/Hanntac/) and [u/leo_vir](https://www.reddit.com/user/leo_vir/) for their contributions!
+Thanks to [u/ClinicallyInPain](https://www.reddit.com/user/ClinicallyInPain/) on reddit for compiling some of the resources and to [u/Hanntac](https://www.reddit.com/user/Hanntac/) and [u/leo_vir](https://www.reddit.com/user/leo_vir/) for their contributions! Both of the last two credits helped me through PM so I am incredibly thankful for the both of them!
 
 Sources:
 * https://www.reddit.com/r/SteamDeck/comments/taixhw/new_user_questions_current_user_recommendations/
