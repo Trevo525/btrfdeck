@@ -2,31 +2,42 @@
 
 **This is not in a working state. Do not attempt this on your deck!**
 
-I would eventually like to make this into a guide to setup btrfs on your microSD card for the steam deck. For right now, I just have to get it working.. :)
-
-Currently, I have two files from the Steam Deck that potentially could fix the microSD card for btrfs. Both of these files were located in the following directory: `/usr/lib/hwsupport/`. I copied them to `./unmodified` and the `./modified` folder will eventually be what you should replace them with.
+Currently, I have two files from the Steam Deck that potentially could setup the microSD card for btrfs. Both of these files were located in the following directory: `/usr/lib/hwsupport/`. I copied them to `./unmodified` and the `./modified` folder contains edited versions.
 
 # Guide (**Work in Progress**): 
-1. Setup `deck` user with a password so that you can run things that need sudo.
-    * `passwd deck`
-2. Backup the old scripts.
-    * `mkdir ./backup/`
-    * `cp /usr/lib/hwsupport/sdcard-mount.sh ./backup/sdcard-mount.sh`
-3. Disable readonly so that you can make changes to the protected files. **NOTE: this makes your entire "SteamOS" partition readonly. Basically, removing all barriers keeping you from breaking your system. You've been warned**.
-    * `sudo steamos-readonly disable`
-4. Replace with modified configs.
-    * `sudo rm /usr/lib/hwsupport/sdcard-mount.sh`
-    * `sudo cp ./modified/format-sdcard.sh /usr/lib/hwsupport/sdcard-mount.sh`
-5. Disable readonly so that you can make changes to the protected files.
-    * `sudo steamos-readonly enable`
-6. Format the SD card.
-    * .
-7. Remove the password from the deck user.
-    * `sudo passwd -d deck`
+## Setup `deck` user with a password so that you can run things that need sudo.
+    passwd deck
+## Backup the old script.
+    mkdir ./backup/
+    cp /usr/lib/hwsupport/sdcard-mount.sh ./backup/sdcard-mount.sh
+## Disable readonly so that you can make changes to the protected files. 
+#### **NOTE: this makes your entire "SteamOS" partition readonly. Basically, removing all barriers keeping you from breaking your system. You've been warned**.
+    sudo steamos-readonly disable
+## Replace with modified configs.
+    sudo rm /usr/lib/hwsupport/sdcard-mount.sh
+    sudo cp ./modified/format-sdcard.sh /usr/lib/hwsupport/sdcard-mount.sh
+## Re-enable readonly so that you can make changes to the protected files.
+    sudo steamos-readonly enable
+## Format the SD card.
+    .
+## Remove the password from the deck user.
+    sudo passwd -d deck
+
+# Undo the changes: 
+## Setup `deck` user with a password.
+    passwd deck
+## Disable readonly. 
+    sudo steamos-readonly disable
+## restore from the backup.
+    cp ./backup/sdcard-mount.sh /usr/lib/hwsupport/sdcard-mount.sh
+## Re-enable readonly.
+    sudo steamos-readonly enable
+## Remove the password from the deck user.
+    sudo passwd -d deck
 
 ## format-sdcard.sh
 
-I just found another file so I am adding it now. `format-sdcard.sh`. Potentially this could be edited to format to btrfs rather than ext4.
+I found another file in the same directory. So I added it here. `format-sdcard.sh`. Potentially this could be edited to format to btrfs rather than ext4 through the Steam Deck UI so that you don't have to don't have to go to the desktop to format with btrfs.
 
 **Saved for if I get this to work**:
 
