@@ -74,7 +74,7 @@ do_mount()
 
     # Custom btrfs addition from https://github.com/Trevo525/Steam-Deck-sdcard-mount
     if [[ ${ID_FS_TYPE} == "btrfs" ]]; then
-        OPTS+="compress=zstd:15"
+        OPTS+=",compress=zstd:15"
     fi
 
     if [[ ${ID_FS_TYPE} != "ext4" && ${ID_FS_TYPE} != "btrfs" ]]; then

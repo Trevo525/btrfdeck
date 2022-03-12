@@ -4,23 +4,29 @@
 
 Currently, I have two files from the Steam Deck that potentially could setup the microSD card for btrfs. Both of these files were located in the following directory: `/usr/lib/hwsupport/`. I copied them to `./unmodified` and the `./modified` folder contains edited versions.
 
-# Guide (**Work in Progress**): 
-## 1. Setup `deck` user with a password so that you can run things that need sudo.
+# Guide (**Work in Progress**):
+## 1. Download this project to your home directory of the deck.
+    cd ~
+    git clone https://github.com/Trevo525/btrfdeck
+    cd btrfdeck
+## 2. Setup `deck` user with a password so that you can run things that need sudo.
     passwd deck
-## 2. Backup the old script.
+## 3. Backup the old script.
     mkdir ./backup/
     cp /usr/lib/hwsupport/sdcard-mount.sh ./backup/sdcard-mount.sh
-## 3. Disable readonly so that you can make changes to the protected files. 
+## 4. Disable readonly so that you can make changes to the protected files. 
 #### **NOTE: this makes your entire "SteamOS" partition readonly. Basically, removing all barriers keeping you from breaking your system. You've been warned**.
     sudo steamos-readonly disable
-## 4. Replace with modified configs.
+## 5. Replace with modified configs.
     sudo rm /usr/lib/hwsupport/sdcard-mount.sh
     sudo cp ./modified/format-sdcard.sh /usr/lib/hwsupport/sdcard-mount.sh
-## 5. Re-enable readonly so that you can make changes to the protected files.
+    sudo chmod 755 /usr/lib/hwsupport/sdcard-mount.sh
+## 6. Re-enable readonly so that you can make changes to the protected files.
     sudo steamos-readonly enable
-## 6. Format the SD card.
-    .
-## 7. Remove the password from the deck user.
+## 7. Format the SD card.
+    sudo parted --script /dev/mmcblk0 mklabel gpt mkpart primary 0% 100%
+    sudo mkfs.btrfs -f /dev/mmcblk0p1
+## 8. Remove the password from the deck user.
     sudo passwd -d deck
 
 # Undo the changes: 
@@ -29,6 +35,7 @@ Currently, I have two files from the Steam Deck that potentially could setup the
 ## 2. Disable readonly. 
     sudo steamos-readonly disable
 ## 3. restore from the backup.
+    sudo rm /usr/lib/hwsupport/sdcard-mount.sh
     cp ./backup/sdcard-mount.sh /usr/lib/hwsupport/sdcard-mount.sh
 ## 4. Re-enable readonly.
     sudo steamos-readonly enable
