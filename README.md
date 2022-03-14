@@ -27,14 +27,14 @@ The are two arguments that might suggest that this isn't a good idea.
 ## 3. Backup the old script.
     mkdir ./backup/
     cp /usr/lib/hwsupport/sdcard-mount.sh ./backup/sdcard-mount.sh
-## 4. Disable readonly so that you can make changes to the protected files. 
-#### **NOTE: this makes your entire "SteamOS" partition readonly. Basically, removing all barriers keeping you from breaking your system. You've been warned**.
+## 4. Change the filesystem to read-write so that you can make changes to the protected files. 
+#### **NOTE: this makes your entire "SteamOS" partition read-write. Basically, removing all barriers keeping you from breaking your system. You've been warned**.
     sudo steamos-readonly disable
 ## 5. Replace with modified configs.
     sudo rm /usr/lib/hwsupport/sdcard-mount.sh
     sudo cp ./modified/sdcard-mount.sh /usr/lib/hwsupport/sdcard-mount.sh
     sudo chmod 755 /usr/lib/hwsupport/sdcard-mount.sh
-## 6. Re-enable readonly so that you can make changes to the protected files.
+## 6. Change teh filesystem back to read-only so that you can no longer make changes to the protected files.
     sudo steamos-readonly enable
 ## 7. Format the SD card.
     sudo parted --script /dev/mmcblk0 mklabel gpt mkpart primary 0% 100%
