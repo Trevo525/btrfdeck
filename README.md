@@ -34,7 +34,7 @@ The are two arguments that might suggest that this isn't a good idea.
     sudo rm /usr/lib/hwsupport/sdcard-mount.sh
     sudo cp ./modified/sdcard-mount.sh /usr/lib/hwsupport/sdcard-mount.sh
     sudo chmod 755 /usr/lib/hwsupport/sdcard-mount.sh
-## 6. Change teh filesystem back to read-only so that you can no longer make changes to the protected files.
+## 6. Change the filesystem back to read-only so that you can no longer make changes to the protected files.
     sudo steamos-readonly enable
 ## 7. Format the SD card.
     sudo parted --script /dev/mmcblk0 mklabel gpt mkpart primary 0% 100%
@@ -47,12 +47,12 @@ From here, I was able to get it to work. I first tried on a 128 GB microSD card 
 # Undo the changes: 
 ## 1. Setup `deck` user with a password.
     passwd deck
-## 2. Disable readonly. 
+## 2. Change the filesystem to read-write.  
     sudo steamos-readonly disable
 ## 3. restore from the backup.
     sudo rm /usr/lib/hwsupport/sdcard-mount.sh
     cp ./backup/sdcard-mount.sh /usr/lib/hwsupport/sdcard-mount.sh
-## 4. Re-enable readonly.
+## 4. Change the filesystem back to read-only.
     sudo steamos-readonly enable
 ## 5. Remove the password from the deck user.
     sudo passwd -d deck
