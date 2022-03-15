@@ -1,35 +1,9 @@
 # btrfdeck - (butter-f-deck)
+Improve your Steam Deck with eight simple steps! **This is potentially unsafe and a little buggy. Don't do this unless you know what you are doing! I will change the text in this notice when I am confident in the guide for non-techy people :-)**
 
-**This is potentially unsafe and a little buggy. Don't do this unless you know what you are doing! I will change the text in this notice when I am confident in the guide for non-techy people :-)**
+The instructions and files on this page are designed to help you format microSD cards for your Steam Deck with [BTRFS](https://btrfs.wiki.kernel.org/index.php/Main_Page). This can lead to [tremendous storage space savings](#but-why) and even [faster loading performance](#but-why).
 
-Currently, I have two files from the Steam Deck that potentially could setup the microSD card for btrfs. Both of these files were located in the following directory: `/usr/lib/hwsupport/`. I copied them to `./unmodified` and the `./modified` folder contains the custom edited versions.
-
-## sdcard-mount.sh
-This script is what is called when a microSD card is inserted in the slot on the Deck. You can compare the version in `/modified` to `/unmodified` to see exact what I changed but I will summarize them below.
-
-```
-if [[ ${ID_FS_TYPE} != "ext4" && ${ID_FS_TYPE} != "btrfs" ]]; then
-    exit 1
-fi
-```
-This was already on the file but I added `&& ${ID_FS_TYPE} != "btrfs"`. The if statement without this addition says to not mount anything that is not the filesystem type `ext4`. The addition adds btrfs to the list, simply allowing it mount btrfs formatted drives.
-
-```
-if [[ ${ID_FS_TYPE} == "btrfs" ]]; then
-    OPTS+=",compress=zstd:15"
-fi
-```
-The block above was added and was not just changed like the previous one. This section means that if filesystem is btrfs add the zstd compression with a level of 15 to the mounting options. I selected 15 as the compression level but I am open to change that if someone provides a good reason to. :-)
-
-
-## format-sdcard.sh
-When you press the "Format SD Card" button in the Steam Deck UI it calls this script. Below is the changes I made.
-
-```
-# mkfs.ext4 -m 0 -O casefold -F /dev/mmcblk0p1
-mkfs.btrfs -f /dev/mmcblk0p1
-```
-The top line is commented out, that's what the '#' symbol means. The second line is my replacement that formats with btrfs.
+This process involves changing two files in the protected SteamOS partition, which will allow you to format your card more easily and then enable the Deck to automatically mount the card with compression-on-write on insert!
 
 # But why?
 Great question. There are two reasons why you would want to do this.
@@ -44,7 +18,37 @@ The are two arguments that might suggest that this isn't a good idea.
 2. Changing files in the read-only partition is risky.
     * This is also true. Don't do it if you don't know what you are doing. It can however be done without editing anything in the readonly partition. You just have to go in and mount it via desktop mode at every boot and insertion.
 
-# Guide (**Work in Progress**):
+# What is changed?
+There are two files from the Steam Deck that handle mounting and formatting a microSD card formatted with btrfs. Both of these files are located in the  `/usr/lib/hwsupport/` directory. I copied them to `./unmodified` and `./modified` here in this repository and edited in the modified folder.
+
+## sdcard-mount.sh
+This script is called when a microSD card is inserted in the slot on the Deck. You can compare the version in `/modified` to `/unmodified` to see exact what I changed but I will summarize the two changes to this file below.
+
+```
+if [[ ${ID_FS_TYPE} != "ext4" && ${ID_FS_TYPE} != "btrfs" ]]; then
+    exit 1
+fi
+```
+This was already in the file but I added `&& ${ID_FS_TYPE} != "btrfs"`. The if statement without this addition says to not automatically mount anything that is not the filesystem type `ext4`. The addition adds btrfs to the list, simply not closing this script if the drive is formatted with btrfs.
+
+```
+if [[ ${ID_FS_TYPE} == "btrfs" ]]; then
+    OPTS+=",compress=zstd:15"
+fi
+```
+The block above was added and not just changed like the previous one. This section means that if filesystem is btrfs add the zstd compression with a level of 15 to the mounting options. I selected 15 as the compression level but I am open to change that if someone provides a good reason to. :-)
+
+
+## format-sdcard.sh
+When you press the "Format SD Card" button in the Steam Deck UI it calls this script. Below is the change I made.
+
+```
+# mkfs.ext4 -m 0 -O casefold -F /dev/mmcblk0p1
+mkfs.btrfs -f /dev/mmcblk0p1
+```
+The top line is commented out, that's what the '#' symbol means. The second line is my replacement that formats with btrfs.
+
+# Guide:
 ## 1. Download this project to your home directory of the deck.
     cd ~
     git clone https://github.com/Trevo525/btrfdeck
@@ -70,7 +74,13 @@ The are two arguments that might suggest that this isn't a good idea.
 ## 8. Format the SD card.
     Press the "Format SD Card" button in the Steam Deck UI.
 
-From here, I was able to get it to work. I first tried on a 128 GB microSD card and was thinking that it didn't work but it just took me a little bit of time for it to fully mount I guess. I am going to try to get some feedback from people some other Steam Deck owners before I call this guide "working".
+At this point it should automatically mount the drive because both files were changed. If it does not here is how I would troubleshoot:
+* Try ejecting the microSD card and reinserting. (Sometimes it'll take a few seconds to mount a large drive.)
+* Restart Steam.
+* Go to the desktop and check if it is mounted.
+* If that doesn't work, try to format in the SteamUI again. I need to figure out where this logs to so I can add that here.
+* You could try formatting manually, either through KDE Partition Manager or though the terminal.
+* Lastly, if all else fails, you can follow the [Undo the changes](#undo-the-changes) section below to make it as if you never made a change.
 
 # Undo the changes: 
 ## 1. Setup `deck` user with a password.
@@ -91,7 +101,7 @@ I don't know how to quantify some of the weird issues I am having so just know t
 
 # Credits
 
-Thanks to [u/ClinicallyInPain](https://www.reddit.com/user/ClinicallyInPain/) on reddit for compiling some of the resources and to [u/Hanntac](https://www.reddit.com/user/Hanntac/) and [u/leo_vir](https://www.reddit.com/user/leo_vir/) for their contributions! Both of the last two credits helped me through PM so I am incredibly thankful for the both of them!
+Thanks to [u/ClinicallyInPain](https://www.reddit.com/user/ClinicallyInPain/) on reddit for compiling some of the resources and to [u/Hanntac](https://www.reddit.com/user/Hanntac/) and [u/leo_vir](https://www.reddit.com/user/leo_vir/) for their contributions! Both of the last two credits helped me through PM so I am incredibly thankful for the both of them. Also to [u/sporkyuncle](https://www.reddit.com/user/sporkyuncle/) for helping me make it more user-friendly.
 
 Sources:
 * https://www.reddit.com/r/SteamDeck/comments/taixhw/new_user_questions_current_user_recommendations/
