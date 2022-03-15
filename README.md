@@ -1,8 +1,35 @@
 # btrfdeck - (butter-f-deck)
 
-**I was only just now able to get this to work on my Deck. Don't do this unless you know what you are doing! I will change the text in this notice when I am confident in the guide for non-techy people :-)**
+**This is potentially unsafe and a little buggy. Don't do this unless you know what you are doing! I will change the text in this notice when I am confident in the guide for non-techy people :-)**
 
-Currently, I have two files from the Steam Deck that potentially could setup the microSD card for btrfs. Both of these files were located in the following directory: `/usr/lib/hwsupport/`. I copied them to `./unmodified` and the `./modified` folder contains edited versions.
+Currently, I have two files from the Steam Deck that potentially could setup the microSD card for btrfs. Both of these files were located in the following directory: `/usr/lib/hwsupport/`. I copied them to `./unmodified` and the `./modified` folder contains the custom edited versions.
+
+## sdcard-mount.sh
+This script is what is called when a microSD card is inserted in the slot on the Deck. You can compare the version in `/modified` to `/unmodified` to see exact what I changed but I will summarize them below.
+
+```
+if [[ ${ID_FS_TYPE} != "ext4" && ${ID_FS_TYPE} != "btrfs" ]]; then
+    exit 1
+fi
+```
+This was already on the file but I added `&& ${ID_FS_TYPE} != "btrfs"`. The if statement without this addition says to not mount anything that is not the filesystem type `ext4`. The addition adds btrfs to the list, simply allowing it mount btrfs formatted drives.
+
+```
+if [[ ${ID_FS_TYPE} == "btrfs" ]]; then
+    OPTS+=",compress=zstd:15"
+fi
+```
+The block above was added and was not just changed like the previous one. This section means that if filesystem is btrfs add the zstd compression with a level of 15 to the mounting options. I selected 15 as the compression level but I am open to change that if someone provides a good reason to. :-)
+
+
+## format-sdcard.sh
+When you press the "Format SD Card" button in the Steam Deck UI it calls this script. Below is the changes I made.
+
+```
+# mkfs.ext4 -m 0 -O casefold -F /dev/mmcblk0p1
+mkfs.btrfs -f /dev/mmcblk0p1
+```
+The top line is commented out, that's what the '#' symbol means. The second line is my replacement that formats with btrfs.
 
 # But why?
 Great question. There are two reasons why you would want to do this.
@@ -27,20 +54,21 @@ The are two arguments that might suggest that this isn't a good idea.
 ## 3. Backup the old script.
     mkdir ./backup/
     cp /usr/lib/hwsupport/sdcard-mount.sh ./backup/sdcard-mount.sh
+    cp /usr/lib/hwsupport/format-sdcard.sh ./backup/format-sdcard.sh
 ## 4. Change the filesystem to read-write so that you can make changes to the protected files. 
 #### **NOTE: this makes your entire "SteamOS" partition read-write. Basically, removing all barriers keeping you from breaking your system. You've been warned**.
     sudo steamos-readonly disable
 ## 5. Replace with modified configs.
-    sudo rm /usr/lib/hwsupport/sdcard-mount.sh
+    sudo rm /usr/lib/hwsupport/sdcard-mount.sh && sudo rm /usr/lib/hwsupport/format-sdcard.sh
     sudo cp ./modified/sdcard-mount.sh /usr/lib/hwsupport/sdcard-mount.sh
-    sudo chmod 755 /usr/lib/hwsupport/sdcard-mount.sh
+    sudo cp ./modified/format-sdcard.sh /usr/lib/hwsupport/format-sdcard.sh
+    sudo chmod 755 /usr/lib/hwsupport/sdcard-mount.sh /usr/lib/hwsupport/format-sdcard.sh
 ## 6. Change the filesystem back to read-only so that you can no longer make changes to the protected files.
     sudo steamos-readonly enable
-## 7. Format the SD card.
-    sudo parted --script /dev/mmcblk0 mklabel gpt mkpart primary 0% 100%
-    sudo mkfs.btrfs -f /dev/mmcblk0p1
-## 8. Remove the password from the deck user.
+## 7. Remove the password from the deck user.
     sudo passwd -d deck
+## 8. Format the SD card.
+    Press the "Format SD Card" button in the Steam Deck UI.
 
 From here, I was able to get it to work. I first tried on a 128 GB microSD card and was thinking that it didn't work but it just took me a little bit of time for it to fully mount I guess. I am going to try to get some feedback from people some other Steam Deck owners before I call this guide "working".
 
@@ -50,29 +78,18 @@ From here, I was able to get it to work. I first tried on a 128 GB microSD card 
 ## 2. Change the filesystem to read-write.  
     sudo steamos-readonly disable
 ## 3. restore from the backup.
-    sudo rm /usr/lib/hwsupport/sdcard-mount.sh
+    sudo rm /usr/lib/hwsupport/sdcard-mount.sh && sudo rm /usr/lib/hwsupport/format-sdcard.sh
     cp ./backup/sdcard-mount.sh /usr/lib/hwsupport/sdcard-mount.sh
+    cp ./backup/format-sdcard.sh /usr/lib/hwsupport/format-sdcard.sh
 ## 4. Change the filesystem back to read-only.
     sudo steamos-readonly enable
 ## 5. Remove the password from the deck user.
     sudo passwd -d deck
 
+# Issues
+I don't know how to quantify some of the weird issues I am having so just know this isn't perfect but after I've tested it for a little while longer I'll leave some more notes here. If you try this and you have any issues feel free to leave an [issue here](https://github.com/Trevo525/btrfdeck/issues).
 
-## format-sdcard.sh
-
-I found another file in the same directory. So I added it here. `format-sdcard.sh`. I believe that this file is what is triggered from the "Format SD" button in the Steam Deck UI. Potentially this could be edited to format to btrfs rather than ext4 through the Steam Deck UI so that you don't have to don't have to go to the desktop to format with btrfs. Once I get some tests on the above, I will try to get this setup as well!
-
-**Saved for if I get this to work**:
-
-`/usr/lib/hwsupport/format-sdcard.sh`
-
-`cp /usr/lib/hwsupport/format-sdcard.sh ./backup/format-sdcard.sh`
-
-`sudo rm /usr/lib/hwsupport/format-sdcard.sh`
-
-`sudo cp ./modified/format-sdcard.sh /usr/lib/hwsupport/format-sdcard.sh`
-
-
+# Credits
 
 Thanks to [u/ClinicallyInPain](https://www.reddit.com/user/ClinicallyInPain/) on reddit for compiling some of the resources and to [u/Hanntac](https://www.reddit.com/user/Hanntac/) and [u/leo_vir](https://www.reddit.com/user/leo_vir/) for their contributions! Both of the last two credits helped me through PM so I am incredibly thankful for the both of them!
 
