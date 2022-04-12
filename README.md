@@ -35,7 +35,7 @@ This was already in the file but I added `&& ${ID_FS_TYPE} != "btrfs"`. The if s
 
 ```
 if [[ ${ID_FS_TYPE} == "btrfs" ]]; then
-    OPTS+=",compress=zstd:15"
+    OPTS+=",compress-force=zstd:15"
 fi
 ```
 The block above was added and not just changed like the previous one. This section means that if filesystem is btrfs add the zstd compression with a level of 15 to the mounting options. I selected 15 as the compression level but I am open to change that if someone provides a good reason to. :-)
@@ -105,6 +105,10 @@ I don't know how to quantify some of the weird issues I am having so just know t
 
 Thanks to [u/ClinicallyInPain](https://www.reddit.com/user/ClinicallyInPain/) on reddit for compiling some of the resources and to [u/Hanntac](https://www.reddit.com/user/Hanntac/) and [u/leo_vir](https://www.reddit.com/user/leo_vir/) for their contributions! Both of the last two credits helped me through PM so I am incredibly thankful for the both of them. Also to [u/sporkyuncle](https://www.reddit.com/user/sporkyuncle/) for helping me make it more user-friendly.
 
+The following Github users:
+* [taotien](https://github.com/taotien)
+* [ktully](https://github.com/ktully)
+
 Sources:
 * https://www.reddit.com/r/SteamDeck/comments/taixhw/new_user_questions_current_user_recommendations/
 * https://docs.kde.org/trunk5/en/partitionmanager/partitionmanager/partitionmanager.pdf
@@ -112,3 +116,4 @@ Sources:
 * https://www.reddit.com/r/SteamDeck/comments/t76wh6/compressing_storage_with_btrfs/
 * https://www.reddit.com/r/SteamDeck/comments/t79fqj/comment/hziqcf5/
 * https://serverfault.com/a/767079
+* https://github.com/Trevo525/btrfdeck/issues/1
