@@ -6,7 +6,7 @@
 
 set -e
 
-cd /home/deck/btrfdeck || echo "Could not find btrfdeck repo!"; exit 1
+cd /home/deck/btrfdeck || echo "Could not find btrfdeck repo!"
 echo "Backing up current files..."
 cp /usr/lib/hwsupport/sdcard-mount.sh ./backup/sdcard-mount.sh
 cp /usr/lib/hwsupport/format-sdcard.sh ./backup/format-sdcard.sh
