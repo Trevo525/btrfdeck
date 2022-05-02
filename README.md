@@ -71,7 +71,7 @@ The top line is commented out, that's what the '#' symbol means. The second line
     sudo chmod 755 /usr/lib/hwsupport/sdcard-mount.sh /usr/lib/hwsupport/format-sdcard.sh
 ## 6. Change the filesystem back to read-only so that you can no longer make changes to the protected files.
     sudo steamos-readonly enable
-## 7. Remove the password from the deck user. (Skip this and next step to use btrfdec_post_update.sh to re-run steps 3-6 after an OS update)
+## 7. Remove the password from the deck user. (Skip this and next step to use btrfdeck_post_update.sh to re-run steps 3-6 after an OS update)
     sudo passwd -d deck
 ## 8. Format the SD card.
     Press the "Format SD Card" button in the Steam Deck UI.
