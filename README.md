@@ -71,7 +71,7 @@ The top line is commented out, that's what the '#' symbol means. The second line
     sudo chmod 755 /usr/lib/hwsupport/sdcard-mount.sh /usr/lib/hwsupport/format-sdcard.sh
 ## 6. Change the filesystem back to read-only so that you can no longer make changes to the protected files.
     sudo steamos-readonly enable
-## 7. Remove the password from the deck user.
+## 7. Remove the password from the deck user. (Skip this and next step to use btrfdec_post_update.sh to re-run steps 3-6 after an OS update)
     sudo passwd -d deck
 ## 8. Format the SD card.
     Press the "Format SD Card" button in the Steam Deck UI.
@@ -83,6 +83,10 @@ At this point it should automatically mount the drive because both files were ch
 * If that doesn't work, try to format in the SteamUI again. I need to figure out where this logs to so I can add that here.
 * You could try formatting manually, either through KDE Partition Manager or though the terminal.
 * Lastly, if all else fails, you can follow the [Undo the changes](#undo-the-changes) section below to make it as if you never made a change.
+
+# After a SteamOS update
+
+## Don't remove password and run the btrfdec_post_update.sh script.
 
 # Undo the changes: 
 ## 1. Setup `deck` user with a password.
