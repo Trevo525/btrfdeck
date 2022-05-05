@@ -86,7 +86,7 @@ At this point it should automatically mount the drive because both files were ch
 
 # After a SteamOS update
 
-## Don't remove password and run the btrfdec_post_update.sh script by right-clicking is and running in terminal.
+## Don't remove password and run the btrfdec_post_update.sh script by right-clicking it and selecting "Run in Konsole".
 
 # Undo the changes: 
 ## 1. Setup `deck` user with a password.
