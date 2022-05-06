@@ -45,8 +45,8 @@ The block above was added and not just changed like the previous one. This secti
 When you press the "Format SD Card" button in the Steam Deck UI it calls this script. Below is the change I made.
 
 ```
-# mkfs.ext4 -m 0 -O casefold -F /dev/mmcblk0p1
-mkfs.btrfs -f /dev/mmcblk0p1
+# mkfs.ext4 -m 0 -O casefold -F "$SDCARD_PARTITION"
+mkfs.btrfs -f "$SDCARD_PARTITION"
 ```
 The top line is commented out, that's what the '#' symbol means. The second line is my replacement that formats with btrfs.
 
