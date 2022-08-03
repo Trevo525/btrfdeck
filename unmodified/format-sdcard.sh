@@ -5,11 +5,15 @@ set -e
 MOUNT_LOCK="/var/run/sdcard-mount.lock"
 SDCARD_DEVICE="/dev/mmcblk0"
 SDCARD_PARTITION="/dev/mmcblk0p1"
-FORCE_FORMAT=0
+RUN_VALIDATION=1
+EXTENDED_OPTIONS="nodiscard"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --force) FORCE_FORMAT=1; shift ;;
+        --force) RUN_VALIDATION=0; shift ;;
+        --skip-validation) RUN_VALIDATION=0; shift ;;
+        --full) EXTENDED_OPTIONS="$EXTENDED_OPTIONS,discard"; shift ;;
+        --quick) EXTENDED_OPTIONS="$EXTENDED_OPTIONS,nodiscard"; shift ;;
         *) echo "Unknown option $1"; exit 22;;
     esac
 done
@@ -29,7 +33,7 @@ echo $$ > "$MOUNT_LOCK"
 # Some fake cards advertise a larger size than their actual capacity,
 # which can result in data loss or other unexpected behaviour. It is
 # best to try to detect these issues as early as possible.
-if [[ "$FORCE_FORMAT" == "0" ]]; then
+if [[ "$RUN_VALIDATION" != "0" ]]; then
     echo "stage=testing"
     if ! f3probe --destructive "$SDCARD_DEVICE"; then
         # Fake sdcards tend to only behave correctly when formatted as exfat
@@ -75,7 +79,7 @@ echo "stage=formatting"
 sync
 parted --script "$SDCARD_DEVICE" mklabel gpt mkpart primary 0% 100%
 sync
-mkfs.ext4 -m 0 -O casefold -F "$SDCARD_PARTITION"
+mkfs.ext4 -m 0 -O casefold -E "$EXTENDED_OPTIONS" -F "$SDCARD_PARTITION"
 sync
 
 rm "$MOUNT_LOCK"
