@@ -1,7 +1,7 @@
 # btrfdeck - (butter-f-deck)
 Improve your Steam Deck with eight simple steps! **This is potentially unsafe and a little buggy. Don't do this unless you know what you are doing! I will change the text in this notice when I am confident in the guide for non-techy people :-)**
 
-The instructions and files on this page are designed to help you format microSD cards for your Steam Deck with [BTRFS](https://btrfs.wiki.kernel.org/index.php/Main_Page). This can lead to [tremendous storage space savings](#but-why) and even [faster loading performance](#but-why).
+The instructions and files on [this page](https://github.com/Trevo525/btrfdeck) are designed to help you format microSD cards for your Steam Deck with [BTRFS](https://btrfs.wiki.kernel.org/index.php/Main_Page). This can lead to [tremendous storage space savings](#but-why) and even [faster loading performance](#but-why).
 
 This process involves changing two files in the protected SteamOS partition, which will allow you to format your card more easily and then enable the Deck to automatically mount the card with compression-on-write on insert!
 
@@ -28,7 +28,7 @@ This script is called when a microSD card is inserted in the slot on the Deck. Y
 
 ```
 if [[ ${ID_FS_TYPE} != "ext4" && ${ID_FS_TYPE} != "btrfs" ]]; then
-    exit 1
+  exit 1
 fi
 ```
 This was already in the file but I added `&& ${ID_FS_TYPE} != "btrfs"`. The if statement without this addition says to not automatically mount anything that is not the filesystem type `ext4`. The addition adds btrfs to the list, simply not closing this script if the drive is formatted with btrfs.
@@ -45,7 +45,7 @@ The block above was added and not just changed like the previous one. This secti
 When you press the "Format SD Card" button in the Steam Deck UI it calls this script. Below is the change I made.
 
 ```
-# mkfs.ext4 -m 0 -O casefold -F "$SDCARD_PARTITION"
+# mkfs.ext4 -m 0 -O casefold -E "$EXTENDED_OPTIONS" -F "$SDCARD_PARTITION"
 mkfs.btrfs -f "$SDCARD_PARTITION"
 ```
 The top line is commented out, that's what the '#' symbol means. The second line is my replacement that formats with btrfs.

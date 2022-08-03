@@ -20,14 +20,14 @@ DEVBASE=$2
 DEVICE="/dev/${DEVBASE}"
 
 MOUNT_LOCK="/var/run/sdcard-mount.lock"
-if [[ -e $MOUNT_LOCK && $(pgrep -F $MOUNT_LOCK) ]]; then
+if [[ -e $MOUNT_LOCK && $(pgrep -F "$MOUNT_LOCK") ]]; then
     echo "$MOUNT_LOCK is active: ignoring action $ACTION"
     # Do not return a success exit code: it could end up putting the service in 'started' state without doing the mount work (further start commands will be ignored after that)
     exit 1
 fi
 
 # See if this drive is already mounted, and if so where
-MOUNT_POINT=$(/bin/mount | /bin/grep ${DEVICE} | /usr/bin/awk '{ print $3 }')
+MOUNT_POINT=$(mount | grep -F "${DEVICE}" | awk '{ print $3 }')
 
 # From https://gist.github.com/HazCod/da9ec610c3d50ebff7dd5e7cac76de05
 urlencode()
@@ -42,14 +42,16 @@ do_mount()
         exit 1
     fi
 
-    # Get info for this drive: $ID_FS_LABEL, $ID_FS_UUID, and $ID_FS_TYPE
-    eval $(/sbin/blkid -o udev ${DEVICE})
+    # Get info for this drive: $ID_FS_LABEL, and $ID_FS_TYPE
+    dev_json=$(lsblk -o PATH,LABEL,FSTYPE --json -- "$DEVICE" | jq '.blockdevices[0]')
+    ID_FS_LABEL=$(jq -r '.label | select(type == "string")' <<< "$dev_json")
+    ID_FS_TYPE=$(jq -r '.fstype | select(type == "string")' <<< "$dev_json")
 
     # Figure out a mount point to use
     LABEL=${ID_FS_LABEL}
     if [[ -z "${LABEL}" ]]; then
         LABEL=${DEVBASE}
-    elif /bin/grep -q " /run/media/${LABEL} " /etc/mtab; then
+    elif /bin/grep -qF " /run/media/${LABEL} " /etc/mtab; then
         # Already in use, make a unique one
         LABEL+="-${DEVBASE}"
     fi
@@ -57,7 +59,7 @@ do_mount()
 
     echo "Mount point: ${MOUNT_POINT}"
 
-    /bin/mkdir -p ${MOUNT_POINT}
+    /bin/mkdir -p -- "${MOUNT_POINT}"
 
     # Global mount options
     OPTS="rw,noatime"
@@ -67,31 +69,27 @@ do_mount()
     #    OPTS+=",users,gid=100,umask=000,shortname=mixed,utf8=1,flush"
     #fi
 
-    # # We need symlinks for Steam for now, so only automount ext4 as that'll Steam will format right now
-    # if [[ ${ID_FS_TYPE} != "ext4" ]]; then
-    #   exit 1
-    # fi
-
     # Custom btrfs addition from https://github.com/Trevo525/Steam-Deck-sdcard-mount
     if [[ ${ID_FS_TYPE} == "btrfs" ]]; then
         OPTS+=",compress-force=zstd:15"
     fi
 
+    # We need symlinks for Steam for now, so only automount ext4 as that'll Steam will format right now
     if [[ ${ID_FS_TYPE} != "ext4" && ${ID_FS_TYPE} != "btrfs" ]]; then
-        exit 1
+      exit 1
     fi
 
-    if ! /bin/mount -o ${OPTS} ${DEVICE} ${MOUNT_POINT}; then
+    if ! /bin/mount -o "${OPTS}" -- "${DEVICE}" "${MOUNT_POINT}"; then
         echo "Error mounting ${DEVICE} (status = $?)"
-        /bin/rmdir ${MOUNT_POINT}
+        /bin/rmdir -- "${MOUNT_POINT}"
         exit 1
     fi
 
-    chown 1000:1000 ${MOUNT_POINT}
+    chown 1000:1000 -- "${MOUNT_POINT}"
 
     echo "**** Mounted ${DEVICE} at ${MOUNT_POINT} ****"
 
-    url=$(urlencode ${MOUNT_POINT})
+    url=$(urlencode "${MOUNT_POINT}")
 
     # If Steam is running, notify it
     if pgrep -x "steam" > /dev/null; then
@@ -103,7 +101,7 @@ do_mount()
 
 do_unmount()
 {
-    url=$(urlencode ${MOUNT_POINT})
+    url=$(urlencode "${MOUNT_POINT}")
 
     # If Steam is running, notify it
     if pgrep -x "steam" > /dev/null; then
@@ -115,7 +113,7 @@ do_unmount()
     if [[ -z ${MOUNT_POINT} ]]; then
         echo "Warning: ${DEVICE} is not mounted"
     else
-        /bin/umount -l ${DEVICE}
+        /bin/umount -l -- "${DEVICE}"
         echo "**** Unmounted ${DEVICE}"
     fi
 
@@ -125,7 +123,7 @@ do_unmount()
     # want to leave it orphaned...
     for f in /run/media/* ; do
         if [[ -n $(/usr/bin/find "$f" -maxdepth 0 -type d -empty) ]]; then
-            if ! /bin/grep -q " $f " /etc/mtab; then
+            if ! /bin/grep -qF " $f " /etc/mtab; then
                 echo "**** Removing mount point $f"
                 /bin/rmdir "$f"
             fi
