@@ -1,5 +1,8 @@
+# Why is this repo archived?
+I tested a different version of this script. Though it may not have as cool of a name, it is easier to use, more actively developed, and offers a `/home` conversion as well! So, after testing on my own Deck, I have decided to archive my repo with a link to theirs. If you like this version better, feel free to fork it. If you just want to use btrfs, use this:  [SteamOS Btrfs](https://gitlab.com/popsulfr/steamos-btrfs/)
+
 # btrfdeck - (butter-f-deck)
-Improve your Steam Deck with eight simple steps! **This is potentially unsafe and a little buggy. Don't do this unless you know what you are doing! I will change the text in this notice when I am confident in the guide for non-techy people :-)**
+Improve your Steam Deck with eight simple steps!
 
 The instructions and files on [this page](https://github.com/Trevo525/btrfdeck) are designed to help you format microSD cards for your Steam Deck with [BTRFS](https://btrfs.wiki.kernel.org/index.php/Main_Page). This can lead to [tremendous storage space savings](#but-why) and even [faster loading performance](#but-why).
 
